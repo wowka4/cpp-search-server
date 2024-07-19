@@ -1,6 +1,6 @@
 # Prerequisites
 *.d
-
+.search-server/idea/
 # Compiled Object files
 *.slo
 *.lo
