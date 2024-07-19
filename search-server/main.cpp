@@ -59,6 +59,7 @@ public:
         const vector<string> words = SplitIntoWordsNoStop(document);
         double occur_word_in_document = 1. / words.size();
         ++document_count_;
+
         for (const string& word : words) {
             word_to_document_freqs_[word][document_id] += occur_word_in_document;
         }
