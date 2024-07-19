@@ -1,6 +1,10 @@
 # Prerequisites
 *.d
+<<<<<<< HEAD
 .search-server/idea/
+=======
+.idea/
+>>>>>>> 7fb3f56ecc218989889aa3af69ac5b229d1aec41
 # Compiled Object files
 *.slo
 *.lo
