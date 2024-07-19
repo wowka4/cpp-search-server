@@ -57,14 +57,10 @@ public:
 
     void AddDocument(const int document_id, const string& document) {
         const vector<string> words = SplitIntoWordsNoStop(document);
+        double occur_word_in_document = 1. / words.size();
         ++document_count_;
         for (const string& word : words) {
-            word_to_document_freqs_[word][document_id]++;
-        }
-
-        const set<string> words_no_repeat {words.begin(), words.end()};
-        for (const string& word : words_no_repeat) {
-            word_to_document_freqs_[word][document_id] /= static_cast<double>(words.size());
+            word_to_document_freqs_[word][document_id] += occur_word_in_document;
         }
     }
 
@@ -124,16 +120,20 @@ private:
         return words;
     }
 
+    double ComputeIdf(const  string& word) const {
+        int occurs_word_in_documents = static_cast<int>(word_to_document_freqs_.at(word).size());
+        double idf = log(static_cast<double>(document_count_) / occurs_word_in_documents);
+        return idf;
+    }
+
     vector<Document> FindAllDocuments(const Query& query_words) const {
         vector<Document> matched_documents;
         map<int, double>document_to_relevance;
 
         for (const string& word: query_words.plus_words_) {
            if (word_to_document_freqs_.count(word)) {
-               int occurs_word_in_documents = static_cast<int>(word_to_document_freqs_.at(word).size());
-               double idf = log(static_cast<double>(document_count_) / occurs_word_in_documents);
                 for (const auto& [id, tf] : word_to_document_freqs_.at(word)) {
-                    document_to_relevance[id] += tf * idf;
+                    document_to_relevance[id] += tf * ComputeIdf(word);
                 }
            }
         }
@@ -150,7 +150,6 @@ private:
         for (const auto& [id, relevance] : document_to_relevance) {
             matched_documents.push_back( {id, relevance} );
         }
-
         return matched_documents;
     }
 };
